@@ -1,0 +1,66 @@
+body {
+	background-color: #ffffFF;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+}
+
+fieldset {
+ border: none;
+}
+
+.center {
+  margin: auto;
+  text-align: center;
+  width: 90%;
+  height: 85vh; 
+  border: 3px solid #12b27f;
+  padding: 10px;
+}
+
+.modebutton {
+  background-color: #12b27f;
+  border: none;
+  color: white;
+  padding: 5px 5px;
+  width: 130px;
+  text-align: center;
+  text-decoration: none;
+  font-size: 16px;
+  border: 3px solid #ffFFff;
+}
+.modebutton:active {
+  color: #FF0000;
+}
+  
+.slider {
+  width: 266px;
+}
+
+.label {
+  display: inline-block;
+  width: 256px;
+  font-size: 16px;
+  font-family: monospace;
+  text-align: left;
+}
+
+.label.bold {
+  font-weight: bold;
+}
+
+.label.red {
+  color: red;
+}
+
+.label.green {
+  color: green;
+}
+
+.label.magenta {
+  color: magenta;
+}
+
+.labelcenter {
+  display: inline-block;
+  width: 256px;
+  font-size: 16px;
+  text-align: center;

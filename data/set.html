@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head><title>Oko</title>
+<meta http-equiv="content-type" content="text/html;charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" type="text/css" href="oko.css">
+<script type="text/javascript">  
+
+  function update_entry(key,status,i)
+  {
+	k = Number(i) + 1;
+    out = k + ": " + key;
+    if (status == "0")
+	{
+	  add = "green";
+	} else if (status == "1")
+	{
+	  add = "magenta"; 
+	} else if (status == "2")
+	{
+	  add = "red";
+	}
+	out = "<div class=\"label " + add + "\">"  + out + "</div><br>";	
+    return out;
+  }
+
+  function send_request(arg) 
+  {
+    for (let el of arg.entries()) 
+      console.log(el);
+    fetch('request',{
+      method: 'post',
+      body: arg   
+    }).then(response => 
+    {
+      return response.json();
+    }).then(json => 
+    {
+      console.log(json);
+	  info = document.getElementById("info");
+      info.innerHTML = "Learned:" + json.info;
+	  info = document.getElementById("keys");
+	  info.innerHTML = json.keys.length + " keys:<br>";
+	  for (let i = 0; i < json.keys.length; i++)
+	  {
+		info.innerHTML += update_entry(json.keys[i],json.status[i],i);
+	  }
+	});
+  }
+
+  function button_pressed(id)
+  {
+    let formData = new FormData();
+    formData.append("press",id)
+    send_request(formData);	
+  }
+
+</script>
+</head>
+<body>   
+  <div class="center">
+    <h3>Open Key Organizer</h3>
+      <fieldset>
+        <button class="modebutton" id="1" onclick=button_pressed(id)>learn keys</button>
+		<button class="modebutton" id="3" onclick=button_pressed(id)>show status</button><br>
+		<br> 
+      </fieldset>
+	   <div class="label" id="keys"></div>
+	   <p><div class="label bold" id="info"></div></p>
+  </div>
+</body>
+</html>
