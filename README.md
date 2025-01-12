@@ -1,2 +1,3 @@
-# ww_key_board
-ESP based check of key presence on board
+Open Key Organizer (aka Oko)
+
+ESP based system to check keys precence on key rack.
