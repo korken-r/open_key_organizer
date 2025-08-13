@@ -97,23 +97,27 @@ void read_key_data(String filename)
 
 void set_out_address(byte value)
 {
+  // First three bites are adress, 8, 16 and 32 are inverted enable bits for
+  // one of the three 4051
   if (value > 15)
   {
-    digitalWrite(ENABLE_1_PIN, HIGH);
-    digitalWrite(ENABLE_2_PIN, LOW);
-    value = value << 4;
+    value = value - 16;
+    value = value | 24;
   }
-  else
+  else if (value > 7)
   {
-    digitalWrite(ENABLE_2_PIN, HIGH);
-    digitalWrite(ENABLE_1_PIN, LOW);
+    value = value - 8;
+    value = value | 40;
+  } else 
+  {
+    value = value | 48;
   }
 
   digitalWrite(LATCH_PIN, LOW);
   digitalWrite(CLOCK_PIN, LOW);
   shiftOut(DATA_PIN, CLOCK_PIN, MSBFIRST, value);
   digitalWrite(LATCH_PIN, HIGH);
-  delay(5);
+  delay(10);
 }
 
 void read_id(int nmb, unsigned int *addr)
@@ -172,7 +176,6 @@ void check_keys()
           kd[other].status = WRONG;   
         }   
     }
-    delay(10);
     //print_ID(i,addr);
   }
 }
@@ -199,17 +202,13 @@ void setup(void)
   pinMode(DATA_PIN, OUTPUT);
   pinMode(CLOCK_PIN, OUTPUT);
   pinMode(LATCH_PIN, OUTPUT);
-  pinMode(ENABLE_1_PIN, OUTPUT);
-  pinMode(ENABLE_2_PIN, OUTPUT);
   pinMode(LED_BUILTIN, OUTPUT);
 
   digitalWrite(DATA_PIN, LOW);
   digitalWrite(CLOCK_PIN, LOW);
   digitalWrite(LATCH_PIN, LOW);
   set_out_address(0);
-  digitalWrite(ENABLE_1_PIN, HIGH);
-  digitalWrite(ENABLE_2_PIN, HIGH);
-  
+
   // internal LED seems do be inverted
   digitalWrite(LED_BUILTIN, HIGH);
 

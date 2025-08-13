@@ -88,7 +88,8 @@ void handleNotFound()
 void send_status()
 {
   JsonDocument json;
-  char output[512];
+  // Take care, needs to be increased for more keys.
+  static char output[600];
   json["info"] = date_time_from_epoch(*g_learn_date);
   JsonArray keys = json["keys"].to<JsonArray>();
   JsonArray status = json["status"].to<JsonArray>();

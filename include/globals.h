@@ -4,24 +4,20 @@
 // nmb of seconds to wait for WIFI, after that, start without
 #define WIFI_MAX_WAIT 10
 
-// maximum number of keys depends on hardware. With two 4067, max is 32
-#define MAX_KEYS 5
+// maximum number of keys depends on hardware. With three 4051, max is 24
+#define MAX_KEYS 24
 
 // adapt used pins here. This is for feather ESP 8266
 #if defined(ARDUINO_ESP8266_ADAFRUIT_HUZZAH)
 #define DATA_PIN     14
 #define CLOCK_PIN    12
 #define LATCH_PIN    13
-#define ENABLE_1_PIN 15
-#define ENABLE_2_PIN 16
 #define ONE_WIRE_PIN  2
 #define NEO_PIN       5
 #elif defined(ARDUINO_ESP8266_WEMOS_D1MINI)
 #define DATA_PIN     D1
 #define CLOCK_PIN    D2
 #define LATCH_PIN    D3
-#define ENABLE_1_PIN D6
-#define ENABLE_2_PIN D7
 #define ONE_WIRE_PIN D4
 #define NEO_PIN      D5
 #endif
