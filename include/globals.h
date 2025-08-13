@@ -8,6 +8,7 @@
 #define MAX_KEYS 5
 
 // adapt used pins here. This is for feather ESP 8266
+#if defined(ARDUINO_ESP8266_ADAFRUIT_HUZZAH)
 #define DATA_PIN     14
 #define CLOCK_PIN    12
 #define LATCH_PIN    13
@@ -15,6 +16,15 @@
 #define ENABLE_2_PIN 16
 #define ONE_WIRE_PIN  2
 #define NEO_PIN       5
+#elif defined(ARDUINO_ESP8266_WEMOS_D1MINI)
+#define DATA_PIN     D1
+#define CLOCK_PIN    D2
+#define LATCH_PIN    D3
+#define ENABLE_1_PIN D6
+#define ENABLE_2_PIN D7
+#define ONE_WIRE_PIN D4
+#define NEO_PIN      D5
+#endif
 
 #define BLINK_DELAY 100
 

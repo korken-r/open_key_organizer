@@ -172,6 +172,7 @@ void check_keys()
           kd[other].status = WRONG;   
         }   
     }
+    delay(10);
     //print_ID(i,addr);
   }
 }
