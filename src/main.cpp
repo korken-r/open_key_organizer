@@ -95,6 +95,23 @@ void read_key_data(String filename)
   }
 }
 
+// Modified version of shiftOut for pins conected via inverter
+void myShiftOut(uint8_t dataPin, uint8_t clockPin, uint8_t bitOrder, uint8_t val) {
+    uint8_t i;
+    val = ~val;
+    for(i = 0; i < 8; i++) {
+        if(bitOrder == LSBFIRST)
+            digitalWrite(dataPin, !!(val & (1 << i)));
+        else
+            digitalWrite(dataPin, !!(val & (1 << (7 - i))));
+
+        digitalWrite(clockPin, LOW);
+        delayMicroseconds(CLOCK_HIGH_DELAY);
+        digitalWrite(clockPin, HIGH);
+        delayMicroseconds(CLOCK_LOW_DELAY);
+    }
+}
+
 void set_out_address(byte value)
 {
   // First three bites are adress, 8, 16 and 32 are inverted enable bits for
@@ -113,11 +130,12 @@ void set_out_address(byte value)
     value = value | 48;
   }
 
-  digitalWrite(LATCH_PIN, LOW);
-  digitalWrite(CLOCK_PIN, LOW);
-  shiftOut(DATA_PIN, CLOCK_PIN, MSBFIRST, value);
+  // LATCH, CLOCK and DATA are inverted
   digitalWrite(LATCH_PIN, HIGH);
-  delay(10);
+  digitalWrite(CLOCK_PIN, HIGH);
+  myShiftOut(DATA_PIN, CLOCK_PIN, MSBFIRST, value);
+  digitalWrite(LATCH_PIN, LOW);
+  delay(SETTLING_TIME);
 }
 
 void read_id(int nmb, unsigned int *addr)
@@ -204,9 +222,9 @@ void setup(void)
   pinMode(LATCH_PIN, OUTPUT);
   pinMode(LED_BUILTIN, OUTPUT);
 
-  digitalWrite(DATA_PIN, LOW);
-  digitalWrite(CLOCK_PIN, LOW);
-  digitalWrite(LATCH_PIN, LOW);
+  digitalWrite(DATA_PIN, HIGH);
+  digitalWrite(CLOCK_PIN, HIGH);
+  digitalWrite(LATCH_PIN, HIGH);
   set_out_address(0);
 
   // internal LED seems do be inverted

@@ -24,6 +24,13 @@
 
 #define BLINK_DELAY 100
 
+//mircoseconds
+#define CLOCK_HIGH_DELAY 2
+#define CLOCK_LOW_DELAY 2
+
+//milliseconds
+#define SETTLING_TIME 10
+
 #define NO     0
 #define LEARN  1
 #define CONFIG 2
