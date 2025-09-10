@@ -18,7 +18,7 @@
 #define DATA_PIN     D1
 #define CLOCK_PIN    D2
 #define LATCH_PIN    D3
-#define ONE_WIRE_PIN D4
+#define ONE_WIRE_PIN D6
 #define NEO_PIN      D5
 #endif
 
@@ -26,10 +26,10 @@
 
 //mircoseconds
 #define CLOCK_HIGH_DELAY 2
-#define CLOCK_LOW_DELAY 2
+#define CLOCK_LOW_DELAY 0
 
 //milliseconds
-#define SETTLING_TIME 10
+#define SETTLING_TIME 5
 
 #define NO     0
 #define LEARN  1
