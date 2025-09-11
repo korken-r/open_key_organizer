@@ -1,14 +1,11 @@
 #ifndef GLOBALS_H
 #define GLOBALS_H
 
-// nmb of seconds to wait for WIFI, after that, start without
-#define WIFI_MAX_WAIT 10
-
 // maximum number of keys depends on hardware. With three 4051, max is 24
 #define MAX_KEYS 24
 #define LED_PER_KEY 2
 
-// adapt used pins here. This is for feather ESP 8266
+// adapt used pins here, depending on esp flavor
 #if defined(ARDUINO_ESP8266_ADAFRUIT_HUZZAH)
 #define DATA_PIN     14
 #define CLOCK_PIN    12
@@ -31,6 +28,9 @@
 #define SETTLING_TIME 5
 #define BLINK_DELAY 100
 
+// nmb of seconds to wait for WIFI, after that, start without
+#define WIFI_MAX_WAIT 10
+
 #define NO     0
 #define LEARN  1
 #define CONFIG 2
@@ -40,7 +40,7 @@
 #define OUT      1 
 #define WRONG    2
 
-struct key_data{
+struct key_data {
   unsigned int addr[2];
   unsigned int status;
 };
