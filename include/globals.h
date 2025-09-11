@@ -6,6 +6,7 @@
 
 // maximum number of keys depends on hardware. With three 4051, max is 24
 #define MAX_KEYS 24
+#define LED_PER_KEY 2
 
 // adapt used pins here. This is for feather ESP 8266
 #if defined(ARDUINO_ESP8266_ADAFRUIT_HUZZAH)
@@ -22,14 +23,13 @@
 #define NEO_PIN      D5
 #endif
 
-#define BLINK_DELAY 100
-
 //mircoseconds
 #define CLOCK_HIGH_DELAY 2
 #define CLOCK_LOW_DELAY 0
 
 //milliseconds
 #define SETTLING_TIME 5
+#define BLINK_DELAY 100
 
 #define NO     0
 #define LEARN  1
