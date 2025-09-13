@@ -2,7 +2,7 @@
 #define GLOBALS_H
 
 // maximum number of keys depends on hardware. With three 4051, max is 24
-#define MAX_KEYS 24
+#define MAX_KEYS 22
 #define LED_PER_KEY 2
 
 // adapt used pins here, depending on esp flavor
