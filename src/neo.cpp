@@ -6,7 +6,7 @@ Adafruit_NeoPixel strip = Adafruit_NeoPixel(MAX_KEYS * LED_PER_KEY, NEO_PIN, NEO
 
 uint8_t brightness = 100;
 
-uint16_t led_pos[MAX_KEYS];
+uint16_t led_pos[MAX_KEYS] = {36,42,22,24,30,32,38,40,6,8,14,16,20,26,28,34,2,4,10,12,18,0};
 
 uint32_t fix_colors[MAXC] = {
     strip.Color(0, 0, 0),
@@ -15,37 +15,6 @@ uint32_t fix_colors[MAXC] = {
     strip.Color(0, 255, 0),
     strip.Color(0, 0, 255),
     strip.Color(255, 0, 255)};
-
-void calc_linear_order()
-{
-  for (uint16_t i = 0; i < MAX_KEYS; i++)
-  {
-    led_pos[i] = i * LED_PER_KEY;
-  }
-}
-
-void calc_zickzack_order()
-{
-  uint16_t i = 0;
-  uint16_t a = MAX_KEYS / 2;
-  uint16_t b = 0;
-  while (i < MAX_KEYS)
-  {
-    if (i < MAX_KEYS)
-      led_pos[i++] = a * LED_PER_KEY;
-    a++;
-    if (i < MAX_KEYS)
-      led_pos[i++] = b * LED_PER_KEY;
-    b++;
-    if (i < MAX_KEYS)
-      led_pos[i++] = b * LED_PER_KEY;
-    b++;
-    if (i < MAX_KEYS)
-      led_pos[i++] = a * LED_PER_KEY;
-    a++;
-  }
-}
-
 // WLEDs are also connected via inverter HC14. Do invert and brightness here.
 // Take care: Do not use setBrightness from Adafruit_NeoPixel lib!
 void setPixelColorInvert(uint16_t n, uint32_t c)
@@ -103,10 +72,6 @@ void allOff()
 
 void startNeo(uint32_t initial_color)
 {
-  if (LED_ORDER == ZICKZACK)
-    calc_zickzack_order();
-  else  
-    calc_linear_order();
   strip.begin();
   colorAll(initial_color);
   start_animation(initial_color,RED);

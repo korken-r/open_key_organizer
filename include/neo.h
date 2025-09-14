@@ -17,10 +17,4 @@ void update_LEDs(key_data *kd);
 #define MAGENTA 5
 #define MAXC    6
 
-#define LINEAR   0
-#define ZICKZACK 1 
-
-#define LED_ORDER ZICKZACK
-
-
 #endif

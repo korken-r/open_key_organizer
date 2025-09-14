@@ -25,7 +25,7 @@
 #define CLOCK_LOW_DELAY 0
 
 //milliseconds
-#define SETTLING_TIME 5
+#define SETTLING_TIME 1
 #define BLINK_DELAY 100
 
 // nmb of seconds to wait for WIFI, after that, start without
