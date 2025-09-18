@@ -6,7 +6,7 @@ Adafruit_NeoPixel strip = Adafruit_NeoPixel(MAX_KEYS * LED_PER_KEY, NEO_PIN, NEO
 
 uint8_t brightness = 100;
 
-uint16_t led_pos[MAX_KEYS] = {36,42,22,24,30,32,38,40,6,8,14,16,20,26,28,34,2,4,10,12,18,0};
+uint16_t led_pos[MAX_KEYS] = {LED_POS};
 
 uint32_t fix_colors[MAXC] = {
     strip.Color(0, 0, 0),
@@ -41,7 +41,7 @@ void colorAll(uint32_t c)
 
 void colorOne(uint16_t i, uint32_t c)
 {
-  uint16_t pos = led_pos[i];
+  uint16_t pos = led_pos[i] * LED_PER_KEY;
 
   for (uint16_t j = 0; j < LED_PER_KEY; j++)
   {

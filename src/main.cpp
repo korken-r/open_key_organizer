@@ -25,7 +25,7 @@ OneWire ds(ONE_WIRE_PIN);
 
 const unsigned int NO_KEY[2] = {0,0};
 const unsigned int BAD_CRC_KEY[2] = {0,42};
-
+uint16_t key_pos[MAX_KEYS] = {KEY_POS};
 key_data kd[MAX_KEYS];
 unsigned long config_create_time;
 uint8_t task = NO;
@@ -141,7 +141,7 @@ void set_out_address(byte value)
 void read_id(int nmb, unsigned int *addr)
 {
   bool result;
-  set_out_address(nmb);
+  set_out_address(key_pos[nmb]);
   result = ds.search((byte*) addr);
   ds.reset_search();
   if (result)

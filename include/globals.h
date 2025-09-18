@@ -20,6 +20,9 @@
 #define NEO_PIN      D5
 #endif
 
+#define LED_POS 1,2,5,6,9,10,13,14,17,18,21,0,3,4,7,8,11,12,15,16,19,20
+#define KEY_POS 16,17,18,19,20,12,13,14,15,0,1,21,8,9,10,11,2,3,4,5,6,7
+
 //mircoseconds
 #define CLOCK_HIGH_DELAY 2
 #define CLOCK_LOW_DELAY 0
