@@ -255,6 +255,8 @@ void setup(void)
     // Switch on builtin LED to signal no WIFI
     digitalWrite(LED_BUILTIN, LOW);
     WiFi.mode(WIFI_OFF);
+    colorAll(MAGENTA);
+    delay(1000);
   }
   else
   {

@@ -14,7 +14,8 @@ uint32_t fix_colors[MAXC] = {
     strip.Color(255, 0, 0),
     strip.Color(0, 255, 0),
     strip.Color(0, 0, 255),
-    strip.Color(255, 0, 255)};
+    strip.Color(255, 0, 255),
+    strip.Color(255, 255, 0)};
 // WLEDs are also connected via inverter HC14. Do invert and brightness here.
 // Take care: Do not use setBrightness from Adafruit_NeoPixel lib!
 void setPixelColorInvert(uint16_t n, uint32_t c)
@@ -55,7 +56,7 @@ void start_animation(uint32_t bc,uint32_t fc)
   {
     colorOne(i,fc);
     strip.show();
-    delay(500);
+    delay(200);
     colorOne(i,bc);  
   }
 }
@@ -74,7 +75,18 @@ void startNeo(uint32_t initial_color)
 {
   strip.begin();
   colorAll(initial_color);
-  start_animation(initial_color,RED);
+  delay(2000);
+  colorAll(RED);
+  delay(2000);
+  colorAll(GREEN);
+  delay(2000);
+  colorAll(MAGENTA);
+  delay(2000);
+  colorAll(YELLOW);
+  delay(2000);
+  colorAll(WHITE);
+  delay(2000);
+  start_animation(BLUE,RED);
   strip.show();
 }
 

@@ -15,6 +15,7 @@ void update_LEDs(key_data *kd);
 #define GREEN   3
 #define BLUE    4
 #define MAGENTA 5
-#define MAXC    6
+#define YELLOW  6
+#define MAXC    7
 
 #endif
