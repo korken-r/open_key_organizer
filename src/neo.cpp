@@ -61,16 +61,6 @@ void start_animation(uint32_t bc,uint32_t fc)
   }
 }
 
-void show_LEDs()
-{
-  strip.show();
-}
-
-void allOff()
-{
-  colorAll(0);
-}
-
 void startNeo(uint32_t initial_color)
 {
   strip.begin();
@@ -92,9 +82,6 @@ void startNeo(uint32_t initial_color)
 
 void update_LEDs(key_data *kd)
 {
-  static int toggle = 1;
-  static unsigned long last_toggle = 0;
-  unsigned long now = 0;
   for (uint16_t i = 0; i < MAX_KEYS; i++)
   {
     if (kd[i].status == IN)
@@ -102,24 +89,8 @@ void update_LEDs(key_data *kd)
     else if (kd[i].status == OUT)
       colorOne(i, MAGENTA);
     else
-    {
-      if (toggle)
-      {
-        colorOne(i, RED);
-        toggle = 0;
-      }
-      else
-      {
-        colorOne(i, BLACK);
-        toggle = 1;
-      }
-    }
+      colorOne(i, RED);
   }
-  now = millis();
-  if ((now - last_toggle) >= BLINK_DELAY)
-  {
-    toggle = !toggle;
-    last_toggle = now;
-  }
-  show_LEDs();
+  strip.show();
+  delay(5);
 }

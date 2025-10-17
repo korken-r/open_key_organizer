@@ -169,7 +169,6 @@ void perform_learning()
   }
   save_key_data(config_file);
   Serial.println("Done..");
-  allOff();
   send_status();
 }
 
@@ -214,9 +213,11 @@ void execute_web_tasks()
 
 void setup(void)
 {
+
   Serial.begin(115200);
   Serial.println("");
-  
+  Serial.println("Welcome to OKO");
+
   pinMode(DATA_PIN, OUTPUT);
   pinMode(CLOCK_PIN, OUTPUT);
   pinMode(LATCH_PIN, OUTPUT);
@@ -279,5 +280,4 @@ void loop(void)
   }
   check_keys();
   update_LEDs(kd);
-  //delay(1000);
 }
