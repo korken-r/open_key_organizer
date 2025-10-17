@@ -16,7 +16,8 @@ uint32_t fix_colors[MAXC] = {
     strip.Color(0, 0, 255),
     strip.Color(255, 0, 255),
     strip.Color(255, 255, 0)};
-// WLEDs are also connected via inverter HC14. Do invert and brightness here.
+
+// WLEDs may be connected via inverter HC14. Do invert and brightness here.
 // Take care: Do not use setBrightness from Adafruit_NeoPixel lib!
 void setPixelColorInvert(uint16_t n, uint32_t c)
 {
@@ -27,8 +28,10 @@ void setPixelColorInvert(uint16_t n, uint32_t c)
   g = (g * brightness) >> 8;
   b = (b * brightness) >> 8;
   c = ((uint32_t)r << 16) + ((uint32_t)g << 8) + (uint32_t)b;
-  uint32_t c_inv = ~c;
-  strip.setPixelColor(n, c_inv);
+#ifdef INVERT_NEO
+  c = ~c;
+#endif  
+  strip.setPixelColor(n, c);
 }
 
 void colorAll(uint32_t c)

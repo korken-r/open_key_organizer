@@ -130,11 +130,17 @@ void set_out_address(byte value)
     value = value | 48;
   }
 
-  // LATCH, CLOCK and DATA are inverted
+  #ifdef INVERT_LOGIC
   digitalWrite(LATCH_PIN, HIGH);
   digitalWrite(CLOCK_PIN, HIGH);
   myShiftOut(DATA_PIN, CLOCK_PIN, MSBFIRST, value);
   digitalWrite(LATCH_PIN, LOW);
+  #else
+  digitalWrite(LATCH_PIN, LOW);
+  digitalWrite(CLOCK_PIN, LOW);
+  shiftOut(DATA_PIN, CLOCK_PIN, MSBFIRST, value);
+  digitalWrite(LATCH_PIN, HIGH);
+  #endif
   delay(SETTLING_TIME);
 }
 
@@ -222,10 +228,16 @@ void setup(void)
   pinMode(CLOCK_PIN, OUTPUT);
   pinMode(LATCH_PIN, OUTPUT);
   pinMode(LED_BUILTIN, OUTPUT);
-
+#ifdef INVERT_LOGIC
   digitalWrite(DATA_PIN, HIGH);
   digitalWrite(CLOCK_PIN, HIGH);
   digitalWrite(LATCH_PIN, HIGH);
+#else
+  digitalWrite(DATA_PIN, LOW);
+  digitalWrite(CLOCK_PIN, LOW);
+  digitalWrite(LATCH_PIN, LOW);
+#endif
+
   set_out_address(0);
 
   // internal LED seems do be inverted

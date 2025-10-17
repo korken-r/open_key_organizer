@@ -26,6 +26,8 @@
 #define NEO_PIN      D5
 #endif
 
+#define INVERT_LOGIC
+#define INVERT_NEO
 
 //mircoseconds
 #define CLOCK_HIGH_DELAY 2
