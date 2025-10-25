@@ -83,7 +83,7 @@ void startNeo(uint32_t initial_color)
   strip.show();
 }
 
-void update_LEDs(key_data *kd)
+void update_LEDs(key_data *kd, int toggle)
 {
   for (uint16_t i = 0; i < MAX_KEYS; i++)
   {
@@ -91,8 +91,19 @@ void update_LEDs(key_data *kd)
       colorOne(i, GREEN);
     else if (kd[i].status == OUT)
       colorOne(i, MAGENTA);
+    else if (kd[i].status == EMPTY)  
+      colorOne(i, BLACK);
     else
-      colorOne(i, RED);
+    {
+      if (kd[i].blink == 1) 
+      {
+        colorOne(i, BLACK);      
+      } else {
+        colorOne(i, RED);              
+      }
+      if (toggle)
+        kd[i].blink = !kd[i].blink;
+    }
   }
   strip.show();
   delay(5);

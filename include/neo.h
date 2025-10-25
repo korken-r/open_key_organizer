@@ -5,7 +5,7 @@
 void startNeo(uint32_t initial_color);
 void colorOne(uint32_t i, uint32_t c);
 void colorAll(uint32_t c);
-void update_LEDs(key_data *kd);
+void update_LEDs(key_data *kd, int toggle);
 
 #define BLACK   0
 #define WHITE   1

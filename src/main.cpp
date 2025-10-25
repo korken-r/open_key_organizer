@@ -20,32 +20,46 @@ const char *config_file = "oko_config.dat";
 FS *fileSystem = &LittleFS;
 
 WiFiUDP ntpUDP;
-NTPClient timeClient(ntpUDP,time_server);
+NTPClient timeClient(ntpUDP, time_server);
 OneWire ds(ONE_WIRE_PIN);
 
-const unsigned int NO_KEY[2] = {0,0};
-const unsigned int BAD_CRC_KEY[2] = {0,42};
+unsigned int NO_KEY[2] = {0, 0};
+unsigned int BAD_CRC_KEY[2] = {0, 42};
 uint16_t key_pos[MAX_KEYS] = {KEY_POS};
 key_data kd[MAX_KEYS];
 unsigned long config_create_time;
 uint8_t task = NO;
 bool has_wifi = false;
+unsigned long last_blink=0,act_milis;
+
+void set_id(unsigned int *a, unsigned int *b)
+{
+  a[0] = b[0];
+  a[1] = b[1];
+}
 
 bool id_is_equal(unsigned int *a, unsigned int *b)
 {
-   if ((a[0] != b[0]) || (a[1] != b[1])) 
-      return false;
+  if ((a[0] != b[0]) || (a[1] != b[1]))
+    return false;
+  return true;
+}
+
+bool id_is_no_key(unsigned int *a)
+{
+  if ((a[0] != NO_KEY[0]) || (a[1] != NO_KEY[1]))
+    return false;
   return true;
 }
 
 int find_right_pos(unsigned int *a)
 {
   for (int i = 0; i < MAX_KEYS; i++)
-   {
-      if (id_is_equal(a,kd[i].addr))
-        return i;
-   }
-   return -1;
+  {
+    if (id_is_equal(a, kd[i].addr))
+      return i;
+  }
+  return -1;
 }
 
 void save_key_data(String filename)
@@ -56,7 +70,9 @@ void save_key_data(String filename)
     timeClient.update();
     config_create_time = timeClient.getEpochTime();
     timeClient.end();
-  } else {
+  }
+  else
+  {
     config_create_time = 0;
   }
 
@@ -81,11 +97,15 @@ void read_key_data(String filename)
     Serial.print("Read config from: ");
     File file = fileSystem->open(filename, "r");
     file.read((unsigned char *)&config_create_time, sizeof(config_create_time));
-    Serial.println(date_time_from_epoch(config_create_time)) ;
+    Serial.println(date_time_from_epoch(config_create_time));
     for (int i = 0; i < MAX_KEYS; i++)
     {
       file.read((unsigned char *)&tmp, sizeof(tmp));
       file.read((unsigned char *)kd[i].addr, 2 * sizeof(kd[i].addr[0]));
+      if (id_is_no_key(kd[i].addr))
+      {
+        kd[i].status = EMPTY;
+      }
     }
     file.close();
   }
@@ -96,20 +116,22 @@ void read_key_data(String filename)
 }
 
 // Modified version of shiftOut for pins conected via inverter
-void myShiftOut(uint8_t dataPin, uint8_t clockPin, uint8_t bitOrder, uint8_t val) {
-    uint8_t i;
-    val = ~val;
-    for(i = 0; i < 8; i++) {
-        if(bitOrder == LSBFIRST)
-            digitalWrite(dataPin, !!(val & (1 << i)));
-        else
-            digitalWrite(dataPin, !!(val & (1 << (7 - i))));
+void myShiftOut(uint8_t dataPin, uint8_t clockPin, uint8_t bitOrder, uint8_t val)
+{
+  uint8_t i;
+  val = ~val;
+  for (i = 0; i < 8; i++)
+  {
+    if (bitOrder == LSBFIRST)
+      digitalWrite(dataPin, !!(val & (1 << i)));
+    else
+      digitalWrite(dataPin, !!(val & (1 << (7 - i))));
 
-        digitalWrite(clockPin, LOW);
-        delayMicroseconds(CLOCK_HIGH_DELAY);
-        digitalWrite(clockPin, HIGH);
-        delayMicroseconds(CLOCK_LOW_DELAY);
-    }
+    digitalWrite(clockPin, LOW);
+    delayMicroseconds(CLOCK_HIGH_DELAY);
+    digitalWrite(clockPin, HIGH);
+    delayMicroseconds(CLOCK_LOW_DELAY);
+  }
 }
 
 void set_out_address(byte value)
@@ -125,22 +147,23 @@ void set_out_address(byte value)
   {
     value = value - 8;
     value = value | 40;
-  } else 
+  }
+  else
   {
     value = value | 48;
   }
 
-  #ifdef INVERT_LOGIC
+#ifdef INVERT_LOGIC
   digitalWrite(LATCH_PIN, HIGH);
   digitalWrite(CLOCK_PIN, HIGH);
   myShiftOut(DATA_PIN, CLOCK_PIN, MSBFIRST, value);
   digitalWrite(LATCH_PIN, LOW);
-  #else
+#else
   digitalWrite(LATCH_PIN, LOW);
   digitalWrite(CLOCK_PIN, LOW);
   shiftOut(DATA_PIN, CLOCK_PIN, MSBFIRST, value);
   digitalWrite(LATCH_PIN, HIGH);
-  #endif
+#endif
   delay(SETTLING_TIME);
 }
 
@@ -148,18 +171,18 @@ void read_id(int nmb, unsigned int *addr)
 {
   bool result;
   set_out_address(key_pos[nmb]);
-  result = ds.search((byte*) addr);
+  result = ds.search((byte *)addr);
   ds.reset_search();
   if (result)
   {
-    if (OneWire::crc8((byte*)addr, 7) != ((byte*)addr)[7])
+    if (OneWire::crc8((byte *)addr, 7) != ((byte *)addr)[7])
     {
-      memcpy(addr,BAD_CRC_KEY,8); 
+      set_id(addr, BAD_CRC_KEY);
     }
   }
   else
   {
-    memcpy(addr,NO_KEY,8);
+    set_id(addr, NO_KEY);
   }
 }
 
@@ -171,7 +194,10 @@ void perform_learning()
   {
     read_id(i, kd[i].addr);
     print_ID(i, kd[i].addr);
-    kd[i].status = IN;
+    if (id_is_no_key(kd[i].addr))
+      kd[i].status = EMPTY;
+    else
+      kd[i].status = IN;
   }
   save_key_data(config_file);
   Serial.println("Done..");
@@ -185,21 +211,27 @@ void check_keys()
   for (int i = 0; i < MAX_KEYS; i++)
   {
     read_id(i, addr);
-    if (id_is_equal(addr,kd[i].addr))
+    if (id_is_equal(addr, kd[i].addr))
     {
-      kd[i].status = IN;
-    } else if ((addr[0] == 0) && (i != other))
-    {
-       kd[i].status = OUT;
-    } else {        
-        kd[i].status = WRONG;
-        other = find_right_pos(addr);
-        if (other >= 0)
-        {
-          kd[other].status = WRONG;   
-        }   
+      if (id_is_no_key(kd[i].addr))
+        kd[i].status = EMPTY;
+      else
+        kd[i].status = IN;
     }
-    //print_ID(i,addr);
+    else if (id_is_no_key(addr))
+    {
+      kd[i].status = OUT;
+    }
+    else
+    {
+      kd[i].status = WRONG;
+      other = find_right_pos(addr);
+      if (other >= 0)
+      {
+        kd[other].status = WRONG;
+        kd[other].blink = !kd[i].blink;
+      }
+    }
   }
 }
 
@@ -247,10 +279,10 @@ void setup(void)
 
   fileSystem->begin();
   read_key_data(config_file);
- 
+
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
-  
+
   // Wait for connection
   int max_tries = WIFI_MAX_WAIT * 2;
   while ((WiFi.status() != WL_CONNECTED) && (max_tries > 0))
@@ -259,7 +291,7 @@ void setup(void)
     max_tries -= 1;
     Serial.print(".");
   }
-  
+
   if (max_tries == 0)
   {
     Serial.println("");
@@ -279,7 +311,7 @@ void setup(void)
     Serial.println(ssid);
     Serial.print("IP address: ");
     Serial.println(WiFi.localIP());
-    init_web(&task,kd,&config_create_time);
+    init_web(&task, kd, &config_create_time);
   }
 }
 
@@ -290,6 +322,14 @@ void loop(void)
     handle_web();
     execute_web_tasks();
   }
+
   check_keys();
-  update_LEDs(kd);
+  act_milis = millis();
+  if ( (act_milis-last_blink) >= BLINK_DELAY)
+  {
+    update_LEDs(kd,1);
+    last_blink = act_milis;
+  } else { 
+    update_LEDs(kd,0);
+  }
 }
