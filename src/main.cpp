@@ -32,6 +32,7 @@ key_data kd[MAX_KEYS];
 JsonDocument cfg; 
 unsigned long config_create_time;
 uint8_t task = NO;
+uint8_t led_test;
 bool has_wifi = false;
 unsigned long last_blink=0,act_milis;
 unsigned int blink_delay=100;
@@ -292,6 +293,7 @@ void execute_web_tasks()
     break;
   case RESET:
     ESP.reset();
+    break;
   }
   task = NO;
 }
@@ -365,7 +367,7 @@ void setup(void)
     Serial.print("IP address: ");
     Serial.println(WiFi.localIP());
   }
-  init_web(&task, kd, &config_create_time,&cfg);
+  init_web(&task, kd, &config_create_time, &cfg, &led_test);
   Serial.println("");
 }
 
@@ -373,15 +375,24 @@ void loop(void)
 {
   handle_web();
   execute_web_tasks();
-  check_keys();
-  
-  act_milis = millis();
-  if ( (act_milis-last_blink) >= blink_delay)
+
+  if (led_test)
   {
-    update_LEDs(kd,1);
-    last_blink = act_milis;
-  } else { 
-    update_LEDs(kd,0);
+    do_led_test(led_test);
+  }
+  else
+  {
+    check_keys();
+    act_milis = millis();
+    if ((act_milis - last_blink) >= blink_delay)
+    {
+      update_LEDs(kd, 1);
+      last_blink = act_milis;
+    }
+    else
+    {
+      update_LEDs(kd, 0);
+    }
   }
   //delay(3000);  
 }

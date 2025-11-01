@@ -27,6 +27,7 @@ fieldset {
   font-size: 16px;
   border: 3px solid #ffFFff;
 }
+
 .modebutton:active {
   color: #FF0000;
 }
@@ -64,3 +65,14 @@ fieldset {
   width: 256px;
   font-size: 16px;
   text-align: center;
+}
+  
+.rgbcheck { 
+  width:22px;
+  height:22px;
+  accent-color: #12b27f;
+}
+
+.txtrgbcheck {
+  font-size: 20px;
+}

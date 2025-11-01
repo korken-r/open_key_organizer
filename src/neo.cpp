@@ -68,19 +68,16 @@ void startNeo(uint32_t initial_color)
 {
   strip.begin();
   colorAll(initial_color);
-  delay(2000);
-  colorAll(RED);
-  delay(2000);
-  colorAll(GREEN);
-  delay(2000);
-  colorAll(MAGENTA);
-  delay(2000);
-  colorAll(YELLOW);
-  delay(2000);
-  colorAll(WHITE);
-  delay(2000);
   start_animation(BLUE,RED);
   strip.show();
+}
+
+void do_led_test(uint8_t test_pattern)
+{
+  uint32_t color = strip.Color( 0xFF * (test_pattern & 4),
+                                0xFF * (test_pattern & 2),
+                                0xFF * (test_pattern & 1));          
+  colorAll(color);
 }
 
 void update_LEDs(key_data *kd, int toggle)
@@ -106,7 +103,6 @@ void update_LEDs(key_data *kd, int toggle)
     }
   }
   strip.show();
-  delay(5);
 }
 
 void update_brightness(uint8_t value)

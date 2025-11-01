@@ -51,10 +51,39 @@
       info = document.getElementById("brightnessinf");
       info.innerHTML = "brightness: " + changed.value;
     }
+
     function blink_input(id) {
       changed = document.getElementById(id);
       info = document.getElementById("blinkinf");
       info.innerHTML = "blink delay: " + changed.value;
+    }
+
+    function handle_led_test(id) {
+      r_check = document.getElementById("R");
+      g_check = document.getElementById("G");
+      b_check = document.getElementById("B");
+      off_check = document.getElementById("Off");
+      if ((id == "Off") && (off_check.checked))
+      {
+        r_check.checked = false;
+        g_check.checked = false;
+        b_check.checked = false;
+      }
+      if (((id == "R") && (r_check.checked)) ||
+          ((id == "G") && (g_check.checked)) ||
+          ((id == "B") && (b_check.checked)))
+      {
+        off_check.checked = false;
+      }
+      if (!r_check.checked && !g_check.checked && !b_check.checked)
+      {
+        off_check.checked = true;
+      }
+      out = ((r_check.checked * 1) << 2) + ((g_check.checked * 1) << 1) + (b_check.checked * 1);
+      let formData = new FormData();
+      formData.append("press", 5)
+      formData.append("test", out);
+      send_request(formData);
     }
     window.onload = get_act_cfg;
   </script>
@@ -64,6 +93,7 @@
   <div class="center">
     <h3>Open Key Organizer</h3>
     <fieldset>
+      <h4>Settings</h4>
       <label class="label" for="SSID">WLAN SSID</label>
       <br>
       <input class="input" type="text" id="SSID" name="SSID" size="35">
@@ -81,9 +111,15 @@
       <input oninput=blink_input(id) id="blink_delay" type="range" min="10" max="1000" value="100" step="10" class="slider" />
       <br>
       <button class="modebutton" id="2" onclick=button_pressed(id)>Save</button>
-      <br>
       <button class="modebutton" id="4" onclick=button_pressed(id)>Reset</button>
       <br>
+      <h4>LED Test</h4>
+      <p class = "txtrgbcheck">
+        R<input onclick=handle_led_test(id) id="R" type="checkbox" class="rgbcheck"></>
+        G<input onclick=handle_led_test(id) id="G" type="checkbox" class="rgbcheck"></>
+        B<input onclick=handle_led_test(id) id="B" type="checkbox" class="rgbcheck"></>&nbsp;
+        Off<input onclick=handle_led_test(id) id="Off" type="checkbox" class="rgbcheck"></>
+       </p>
     </fieldset>
   </div>
 </body>

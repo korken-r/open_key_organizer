@@ -14,6 +14,7 @@ uint8_t *g_task;
 key_data *g_kd;
 unsigned long *g_learn_date;
 JsonDocument *g_cfg;
+uint8_t *g_test;
 
 void sendFile(String path, String contentType)
 {
@@ -89,7 +90,10 @@ void handleRequest()
         else if (server.argName(i).compareTo("blink_delay") == 0)
           (*g_cfg)["blink_delay"] = strtol(server.arg(i).c_str(), NULL, 10); 
       }
-    }
+    } else if (*g_task == LEDTEST)
+    {
+        (*g_test) = strtol(server.arg(1).c_str(), NULL, 10);  
+    } 
   }
 }
 
@@ -128,12 +132,17 @@ void send_key_status()
   //Serial.println(output);
 }
 
-void init_web(uint8_t *task_ptr,key_data *kd_ptr, unsigned long *learn_date_ptr, JsonDocument *cfg)
+void init_web(uint8_t *task_ptr,
+              key_data *kd_ptr, 
+              unsigned long *learn_date_ptr, 
+              JsonDocument *cfg,
+              uint8_t *test)
 {
     g_task = task_ptr;
     g_kd = kd_ptr;
     g_learn_date = learn_date_ptr;
     g_cfg = cfg;
+    g_test = test;
 
     server.on("/", handleRoot);
     server.on("/set.html", handleSet);
