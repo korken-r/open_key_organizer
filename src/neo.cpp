@@ -108,3 +108,8 @@ void update_LEDs(key_data *kd, int toggle)
   strip.show();
   delay(5);
 }
+
+void update_brightness(uint8_t value)
+{
+  brightness = constrain(value,1,255);
+}

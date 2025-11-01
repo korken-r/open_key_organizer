@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <title>Oko - Settings</title>
+  <meta http-equiv="content-type" content="text/html;charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" type="text/css" href="oko.css">
+  <script type="text/javascript">
+
+    function get_act_cfg() {
+      fetch('act_cfg').then(response => {
+        return response.json();
+      }).then(json => {
+        console.log(json);
+        document.getElementById("SSID").value = json.ssid;
+        document.getElementById("brightness").value = json.brightness;
+        document.getElementById("blink_delay").value = json.blink_delay;
+        brightness_input("brightness");
+        blink_input("blink_delay");
+      });
+    }
+
+    function send_request(arg) {
+      for (let el of arg.entries())
+        console.log(el);
+      fetch('request', {
+        method: 'post',
+        body: arg
+      }).then(response => {
+        return response.json();
+      }).then(json => {
+        console.log(json);
+      });
+    }
+
+    function button_pressed(id) {
+      let formData = new FormData();
+      formData.append("press", id)
+      if (id == 2) {
+        formData.append("ssid", document.getElementById("SSID").value);
+        formData.append("pass", document.getElementById("PASS").value);
+        formData.append("brightness", document.getElementById("brightness").value);
+        formData.append("blink_delay", document.getElementById("blink_delay").value);
+      }
+      send_request(formData);
+    }
+
+    function brightness_input(id) {
+      changed = document.getElementById(id);
+      info = document.getElementById("brightnessinf");
+      info.innerHTML = "brightness: " + changed.value;
+    }
+    function blink_input(id) {
+      changed = document.getElementById(id);
+      info = document.getElementById("blinkinf");
+      info.innerHTML = "blink delay: " + changed.value;
+    }
+    window.onload = get_act_cfg;
+  </script>
+</head>
+
+<body>
+  <div class="center">
+    <h3>Open Key Organizer</h3>
+    <fieldset>
+      <label class="label" for="SSID">WLAN SSID</label>
+      <br>
+      <input class="input" type="text" id="SSID" name="SSID" size="35">
+      <br>
+      <label class="label" for="PASS">WLAN Password</label>
+      <br>
+      <input class="input" type="password" id="PASS" name="PASS" size="35">
+      <br><br>
+      <label for="brightness" class="label" id="brightnessinf">brightness: 100</label>
+      <br>
+      <input oninput=brightness_input(id) id="brightness" type="range" min="1" max="255" value="100" class="slider" />
+      <br>
+      <label for="blink" class="label" id="blinkinf">blink delay: 100</label>
+      <br>
+      <input oninput=blink_input(id) id="blink_delay" type="range" min="10" max="1000" value="100" step="10" class="slider" />
+      <br>
+      <button class="modebutton" id="2" onclick=button_pressed(id)>Save</button>
+      <br>
+      <button class="modebutton" id="4" onclick=button_pressed(id)>Reset</button>
+      <br>
+    </fieldset>
+  </div>
+</body>
+
+</html>

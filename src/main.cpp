@@ -1,8 +1,8 @@
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
+#include <WiFiClient.h>
 #include <WiFiUdp.h>
 #include <NTPClient.h>
-#include <WiFiClient.h>
 #include <ArduinoJson.h>
 #include <FS.h>
 #include <LittleFS.h>
@@ -12,10 +12,12 @@
 #include <helper.h>
 #include <web.h>
 
-const char *ssid = "";
-const char *password = "";
+const char *ap_ssid = "Oko";
+const char *ap_pass = "";
+
 const char *time_server = "pool.ntp.org";
-const char *config_file = "oko_config.dat";
+const char *key_data_file = "oko_key_data.dat";
+const char *config_file = "oko_config.json";
 
 FS *fileSystem = &LittleFS;
 
@@ -27,10 +29,12 @@ unsigned int NO_KEY[2] = {0, 0};
 unsigned int BAD_CRC_KEY[2] = {0, 42};
 uint16_t key_pos[MAX_KEYS] = {KEY_POS};
 key_data kd[MAX_KEYS];
+JsonDocument cfg; 
 unsigned long config_create_time;
 uint8_t task = NO;
 bool has_wifi = false;
 unsigned long last_blink=0,act_milis;
+unsigned int blink_delay=100;
 
 void set_id(unsigned int *a, unsigned int *b)
 {
@@ -60,6 +64,38 @@ int find_right_pos(unsigned int *a)
       return i;
   }
   return -1;
+}
+
+void save_config_data(String filename)
+{
+    File file = fileSystem->open(filename, "w");
+    if (file)
+    {
+      serializeJson(cfg, file);
+      file.close();
+    }
+}
+
+void read_config_data(String filename)
+{
+    if (fileSystem->exists(filename))
+    {
+      String complete_data;
+      Serial.print("Read config from: ");
+      File file = fileSystem->open(filename, "r");
+      if ( file.available()) {
+        String data = file.readString();
+        complete_data += data;
+      }
+      Serial.println(complete_data);
+      file.close();
+      deserializeJson(cfg, complete_data.c_str());  
+    } else {
+      cfg["ssid"] = "";
+      cfg["pass"] = "";
+      cfg["brightness"] = 100;
+      cfg["blink_delay"] = 100;
+    }
 }
 
 void save_key_data(String filename)
@@ -94,7 +130,7 @@ void read_key_data(String filename)
   if (fileSystem->exists(filename))
   {
     int tmp;
-    Serial.print("Read config from: ");
+    Serial.print("Read key data from: ");
     File file = fileSystem->open(filename, "r");
     file.read((unsigned char *)&config_create_time, sizeof(config_create_time));
     Serial.println(date_time_from_epoch(config_create_time));
@@ -111,7 +147,7 @@ void read_key_data(String filename)
   }
   else
   {
-    Serial.println("No config found, system needs to learn first.");
+    Serial.println("No key data found, system needs to learn first.");
   }
 }
 
@@ -199,9 +235,9 @@ void perform_learning()
     else
       kd[i].status = IN;
   }
-  save_key_data(config_file);
+  save_key_data(key_data_file);
   Serial.println("Done..");
-  send_status();
+  send_key_status();
 }
 
 void check_keys()
@@ -243,8 +279,15 @@ void execute_web_tasks()
     perform_learning();
     break;
   case STATUS:
-    send_status();
+    send_key_status();
     break;
+  case CONFIG:
+    update_brightness( cfg["brightness"] );
+    blink_delay = cfg["blink_delay"];
+    save_config_data(config_file);
+    break;
+  case RESET:
+    ESP.reset();
   }
   task = NO;
 }
@@ -269,19 +312,22 @@ void setup(void)
   digitalWrite(CLOCK_PIN, LOW);
   digitalWrite(LATCH_PIN, LOW);
 #endif
-
+  
   set_out_address(0);
 
   // internal LED seems do be inverted
   digitalWrite(LED_BUILTIN, HIGH);
 
+  fileSystem->begin();
+  read_key_data(key_data_file);
+  read_config_data(config_file);
+  blink_delay = cfg["blink_delay"];
+  update_brightness( cfg["brightness"] );
+
   startNeo(BLUE);
 
-  fileSystem->begin();
-  read_key_data(config_file);
-
   WiFi.mode(WIFI_STA);
-  WiFi.begin(ssid, password);
+  WiFi.begin((const char*)cfg["ssid"],(const char*)cfg["pass"]);
 
   // Wait for connection
   int max_tries = WIFI_MAX_WAIT * 2;
@@ -294,38 +340,38 @@ void setup(void)
 
   if (max_tries == 0)
   {
+    WiFi.disconnect();
     Serial.println("");
     Serial.print("Could not connect to ");
-    Serial.println(ssid);
+    Serial.println((const char*)cfg["ssid"]);
     // Switch on builtin LED to signal no WIFI
     digitalWrite(LED_BUILTIN, LOW);
-    WiFi.mode(WIFI_OFF);
+    WiFi.mode(WIFI_AP);
+    WiFi.softAP(ap_ssid, ap_pass);
+    Serial.print("IP address: ");
+    Serial.println(WiFi.softAPIP());
     colorAll(MAGENTA);
-    delay(1000);
+    delay(1000);  
   }
   else
   {
     has_wifi = true;
     Serial.println("");
     Serial.print("Connected to ");
-    Serial.println(ssid);
+    Serial.println((const char*)cfg["ssid"]);
     Serial.print("IP address: ");
     Serial.println(WiFi.localIP());
-    init_web(&task, kd, &config_create_time);
   }
+  init_web(&task, kd, &config_create_time,&cfg);
 }
 
 void loop(void)
 {
-  if (has_wifi)
-  {
-    handle_web();
-    execute_web_tasks();
-  }
-
+  handle_web();
+  execute_web_tasks();
   check_keys();
   act_milis = millis();
-  if ( (act_milis-last_blink) >= BLINK_DELAY)
+  if ( (act_milis-last_blink) >= blink_delay)
   {
     update_LEDs(kd,1);
     last_blink = act_milis;

@@ -35,7 +35,6 @@
 
 //milliseconds
 #define SETTLING_TIME 1
-#define BLINK_DELAY 100
 
 // nmb of seconds to wait for WIFI, after that, start without
 #define WIFI_MAX_WAIT 10
@@ -44,6 +43,7 @@
 #define LEARN  1
 #define CONFIG 2
 #define STATUS 3
+#define RESET  4
 
 #define IN       0
 #define OUT      1 
