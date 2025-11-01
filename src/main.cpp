@@ -246,19 +246,23 @@ void check_keys()
   unsigned int addr[2];
   for (int i = 0; i < MAX_KEYS; i++)
   {
+     kd[i].status = EMPTY;
+  }
+  for (int i = 0; i < MAX_KEYS; i++)
+  {
     read_id(i, addr);
     if (id_is_equal(addr, kd[i].addr))
     {
-      if (id_is_no_key(kd[i].addr))
-        kd[i].status = EMPTY;
-      else
+      if (!id_is_no_key(kd[i].addr) && (kd[i].status != WRONG))
+      {
         kd[i].status = IN;
+      }
     }
-    else if (id_is_no_key(addr))
+    else if (id_is_no_key(addr) && (kd[i].status != WRONG))
     {
       kd[i].status = OUT;
     }
-    else
+    else if (!id_is_equal(addr, kd[i].addr) && !id_is_no_key(addr))
     {
       kd[i].status = WRONG;
       other = find_right_pos(addr);
@@ -324,7 +328,7 @@ void setup(void)
   blink_delay = cfg["blink_delay"];
   update_brightness( cfg["brightness"] );
 
-  startNeo(BLUE);
+  startNeo(WHITE);
 
   WiFi.mode(WIFI_STA);
   WiFi.begin((const char*)cfg["ssid"],(const char*)cfg["pass"]);
@@ -341,7 +345,6 @@ void setup(void)
   if (max_tries == 0)
   {
     WiFi.disconnect();
-    Serial.println("");
     Serial.print("Could not connect to ");
     Serial.println((const char*)cfg["ssid"]);
     // Switch on builtin LED to signal no WIFI
@@ -363,6 +366,7 @@ void setup(void)
     Serial.println(WiFi.localIP());
   }
   init_web(&task, kd, &config_create_time,&cfg);
+  Serial.println("");
 }
 
 void loop(void)
@@ -370,6 +374,7 @@ void loop(void)
   handle_web();
   execute_web_tasks();
   check_keys();
+  
   act_milis = millis();
   if ( (act_milis-last_blink) >= blink_delay)
   {
@@ -378,4 +383,5 @@ void loop(void)
   } else { 
     update_LEDs(kd,0);
   }
+  //delay(3000);  
 }
