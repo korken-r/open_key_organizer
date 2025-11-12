@@ -1,0 +1,97 @@
+[
+    {
+        "position": 1,
+        "line1": "Blauer Bund",
+        "line2": ""
+    },
+    {
+        "position": 2,
+        "line1": "Roter Bund",
+        "line2": ""
+    },
+    {
+        "position": 3,
+        "line1": "Rolltore",
+        "line2": ""
+    },
+    {
+        "position": 4,
+        "line1": "Fahrradplatz",
+        "line2": "TV"
+    },
+    {
+        "position": 5,
+        "line1": "Ersatzteile",
+        "line2": "Container"
+    },
+    {
+        "position": 6,
+        "line1": "CNC Fräse",
+        "line2": ""
+    },
+    {
+        "position": 7,
+        "line1": "Lötplätze",
+        "line2": ""
+    },
+    {
+        "position": 8,
+        "line1": "Schubladen",
+        "line2": "Schrank"
+    },
+    {
+        "position": 9,
+        "line1": "Bohr-",
+        "line2": "maschine"
+    },
+    {
+        "position": 10,
+        "line1": "Hänge-",
+        "line2": "schränke"
+    },
+    {
+        "position": 11,
+        "line1": "Hänge-",
+        "line2": "schränke (F)"
+    },
+    {
+        "position": 12,
+        "line1": "Drechsel-",
+        "line2": "bank"
+    },
+    {
+        "position": 13,
+        "line1": "Bandsäge",
+        "line2": ""
+    },
+    {
+        "position": 14,
+        "line1": "Handtuch-",
+        "line2": "spender"
+    },
+    {
+        "position": 15,
+        "line1": "Kappsäge",
+        "line2": ""
+    },
+    {
+        "position": 16,
+        "line1": "Gefahrstoffe",
+        "line2": ""
+    },
+    {
+        "position": 17,
+        "line1": "Schrauben-",
+        "line2": "schrank"
+    },
+    {
+        "position": 18,
+        "line1": "Keller",
+        "line2": "3D Druck"
+    },
+    {
+        "position": 19,
+        "line1": "TrudeTrailer",
+        "line2": ""
+    }
+]
